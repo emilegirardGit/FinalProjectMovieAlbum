@@ -33,6 +33,10 @@ public class UserService {
             return (List<User>) userRepository.findAll();
         return userRepository.findAllByUserNameIgnoreCase(userName);
     }
+
+    public List<Item> getAllItems(long userId){
+        return itemRepository.findByUserId(userId);
+    }
     public User addUser(UserRequest userRequest){
         User savedUser = userRepository.save(new User(userRequest));
         return savedUser;
@@ -45,6 +49,13 @@ public class UserService {
         return userRepository.save(userToBeUpdated);
     }
 
+    public void deleteAllItems(long userId){
+
+        if(userRepository.existsById(userId))
+            itemRepository.deleteAllByUserId(userId);
+        else
+            throw new ResourceNotFound("User id not found");
+    }
     public void deleteUser(long userId){
 
         if(userRepository.existsById(userId))

@@ -1,5 +1,6 @@
 package com.example.finalprojectdb.controller;
 
+import com.example.finalprojectdb.entity.Item;
 import com.example.finalprojectdb.entity.User;
 import com.example.finalprojectdb.request.ItemRequest;
 import com.example.finalprojectdb.request.UserRequest;
@@ -34,6 +35,16 @@ public class UserController {
         return userResponses;
     }
 
+    @GetMapping("/{userId}/items")
+    public List<ItemResponse> getAllItems(@PathVariable long userId){
+        List<Item> items =  userService.getAllItems(userId);
+        List<ItemResponse> itemResponses = new ArrayList<>();
+        for (int i = 0; i < items.size(); i++){
+            itemResponses.add(new ItemResponse(items.get(i)));
+        }
+        return itemResponses;
+    }
+
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse addUser(@Valid @RequestBody UserRequest userRequest){
@@ -53,6 +64,11 @@ public class UserController {
     public UserResponse updateUser(@PathVariable long id, @Valid @RequestBody UserRequest userRequest){
         User updatedUser = userService.updateUser(id, userRequest);
         return new UserResponse(updatedUser);
+    }
+
+    @DeleteMapping("{userId}/items")
+    public void deleteAllItems(@PathVariable long userId){
+        userService.deleteAllItems(userId);
     }
 
     @DeleteMapping("/{id}")

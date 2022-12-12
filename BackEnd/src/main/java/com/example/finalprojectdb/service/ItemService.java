@@ -16,4 +16,31 @@ public class ItemService {
     @Autowired
     ItemRepository itemRepository;
 
+    public Item getItem(long itemId){
+
+        return itemRepository.findById(itemId)
+                .orElseThrow(()->new ResourceNotFound("Item id not found"));
+    }
+
+    public Item updateItem(long itemId, ItemRequest itemRequest){
+
+        if(itemRepository.existsById(itemId)) {
+            Item itemToBeUpdated = new Item(itemRequest);
+            itemToBeUpdated.setId(itemId);
+            return itemRepository.save(itemToBeUpdated);
+        }
+        else
+            throw new ResourceNotFound("Item id not found");
+    }
+
+    public void deleteItem(long itemId){
+
+        if (itemRepository.existsById(itemId))
+        {
+            itemRepository.deleteById(itemId);
+        }
+        else
+            throw new ResourceNotFound("Item id not found");
+    }
+
 }
