@@ -7,55 +7,12 @@ import { Rating } from "@smastrom/react-rating";
 import "@smastrom/react-rating/style.css";
 
 function ItemList() {
-  {
-    //const [users, setUsers] = useState([]);
-    //const [items, setItems] = useState([]);
-  }
+  const [Users, setUsers] = useState([]);
+  const [items, setItems] = useState([]);
 
   const [rating, setRating] = useState(0);
 
-  const items = [
-    {
-      Id: 1,
-      Title: "titanic",
-      Type: 1,
-      ImageURL:
-        "https://upload.wikimedia.org/wikipedia/en/1/18/Titanic_%281997_film%29_poster.png",
-      Description: "desc",
-      Rating: 3,
-      Favorite: true,
-    },
-    {
-      Id: 1,
-      Title: "titanic",
-      Type: 1,
-      ImageURL:
-        "https://upload.wikimedia.org/wikipedia/en/1/18/Titanic_%281997_film%29_poster.png",
-      Description: "desc",
-      Rating: 2,
-      Favorite: true,
-    },
-    {
-      Id: 1,
-      Title: "titanic",
-      Type: 1,
-      ImageURL:
-        "https://upload.wikimedia.org/wikipedia/en/1/18/Titanic_%281997_film%29_poster.png",
-      Description: "desc",
-      Rating: 3,
-      Favorite: true,
-    },
-    {
-      Id: 1,
-      Title: "titanic",
-      Type: 1,
-      ImageURL:
-        "https://upload.wikimedia.org/wikipedia/en/1/18/Titanic_%281997_film%29_poster.png",
-      Description: "desc",
-      Rating: 3,
-      Favorite: false,
-    },
-  ];
+  var selectedUser;
 
   const {
     register,
@@ -68,23 +25,32 @@ function ItemList() {
     formState: { errors: errors2 },
   } = useForm();
   const submitNewUser = (data) => {
-    {
-      //setUsers(data);
-      //ddUser(users);
-    }
+    addUser({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      userName: data.userName,
+    });
   };
   const submitNewItem = (data) => {};
+  const changeUser = (data) => {
+    var user = data.target.value;
+    selectedUser = user[0];
+  };
 
   useEffect(() => {
-    console.log(rating);
-  }, [rating]);
+    GetUsers();
+  }, []);
 
-  const loadUsers = () => {
-    axios.get("http://localhost:8080/api/users").then((response) => {
-      {
-        //setUsers(response.data);
-      }
-    });
+  const GetUsers = () => {
+    axios
+      .get("http://localhost:8080/api/users")
+      .then((response) => {
+        console.log(response);
+        setUsers(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const addUser = (user) => {
@@ -92,6 +58,7 @@ function ItemList() {
       .post("http://localhost:8080/api/users", user)
       .then((response) => {
         console.log(response);
+        GetUsers();
       })
       .catch((error) => {
         console.log(error);
@@ -104,6 +71,18 @@ function ItemList() {
         <Row>
           <Col md="auto">
             <div className="forms m-2">
+              <Row>
+                <div className="m-2">
+                  <label>Select user:</label>
+                  <select name="user" onChange={changeUser}>
+                    <option>Select</option>
+                    {Users.map((user) => (
+
+                      <option key={user.id}>{user.id + " " + user.userName}</option>
+                    ))}
+                  </select>
+                </div>
+              </Row>
               <Row>
                 <div>
                   <h3>Add User</h3>
