@@ -12,7 +12,7 @@ function ItemList() {
 
   const [rating, setRating] = useState(0);
 
-  var selectedUser;
+  const [selectedUser, setSelectedUser] = useState(0);
 
   const {
     register,
@@ -31,17 +31,46 @@ function ItemList() {
       userName: data.userName,
     });
   };
-  const submitNewItem = (data) => {};
+  const submitNewItem = (data) => {
+    console.log(data.title, data.description, data.imageURL, rating, data.type)
+    if (selectedUser >= 1)
+      addItem(
+        {
+          title: data.title,
+          description: data.description,
+          imageURL: data.imageURL,
+          favorite: false,
+          rating: rating,
+          type: {
+            type: data.type
+          }
+        },
+        selectedUser
+      );
+    else alert("Please select a user");
+  };
   const changeUser = (data) => {
-    var user = data.target.value;
-    selectedUser = user[0];
+    setSelectedUser(data.currentTarget.value);
+    console.log(selectedUser);
   };
 
   useEffect(() => {
-    GetUsers();
+    getUsers();
+    getItems(selectedUser);
+    addItem({
+      title: "test",
+      description: "te",
+      imageURL: "tfds",
+      favorite: false,
+      rating: rating,
+      type: {
+        type: "movie"
+      }
+    },
+    1)
   }, []);
 
-  const GetUsers = () => {
+  const getUsers = () => {
     axios
       .get("http://localhost:8080/api/users")
       .then((response) => {
@@ -53,12 +82,39 @@ function ItemList() {
       });
   };
 
+  const getItems = (userId) => {
+    if (selectedUser >= 1) {
+      axios
+        .get("http//localhost:8080/api/users/" + userId + "/items")
+        .then((response) => {
+          console.log(response);
+          setItems(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
+
   const addUser = (user) => {
     axios
       .post("http://localhost:8080/api/users", user)
       .then((response) => {
         console.log(response);
-        GetUsers();
+        getUsers();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const addItem = (item, userId) => {
+    var path = "http//localhost:8080/api/users/" + userId + "/items";
+    axios
+      .post(path, item)
+      .then((response) => {
+        console.log(response);
+        getItems(userId);
       })
       .catch((error) => {
         console.log(error);
@@ -75,10 +131,11 @@ function ItemList() {
                 <div className="m-2">
                   <label>Select user:</label>
                   <select name="user" onChange={changeUser}>
-                    <option>Select</option>
+                    <option value="0">Select</option>
                     {Users.map((user) => (
-
-                      <option key={user.id}>{user.id + " " + user.userName}</option>
+                      <option key={user.id} value={user.id}>
+                        {user.userName}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -138,9 +195,9 @@ function ItemList() {
                       className="mt-2"
                       {...register2("type", { required: true })}
                     >
-                      <option value="movie">Movie</option>
-                      <option value="tvshow">Tv-Show</option>
-                      <option value="music">Music</option>
+                      <option value="Movie">Movie</option>
+                      <option value="Tv-Show">Tv-Show</option>
+                      <option value="Music">Music</option>
                     </select>
                     <Rating
                       isRequired
