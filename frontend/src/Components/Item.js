@@ -3,29 +3,30 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Rating } from "@smastrom/react-rating";
 import "@smastrom/react-rating/style.css";
 
-function Item({ Item }) {
+function Item({item, deleteItem, updateFavorite }) {
   return (
     <div className="square border border-dark border-3 rounded p-2 text-center m-3">
-      <img src={Item.ImageURL} alt={Item.Title} width="150" />
+      <img src={item.ImageURL} alt={item.Title} width="150" />
       <br />
       <Button
         className="me-2 mt-3"
-        variant={Item.Favorite ? "warning" : "secondary"}
+        variant={item.Favorite ? "warning" : "secondary"}
         size="sm"
+        onClick={()=>updateFavorite(item.Id)}
       >
         Fav
       </Button>
-      <Button className="ms-5 mt-3" variant="danger" size="sm">
+      <Button onClick={()=>deleteItem(item.Id)} className="ms-5 mt-3" variant="danger" size="sm">
         Delete
       </Button>
-      <h2>{Item.Title}</h2>
-      <h3>{Item.Type}</h3>
+      <h2>{item.Title}</h2>
+      <h4>{item.Type.type}</h4>
       <Rating
         className="m-auto"
         style={{ maxWidth: 150 }}
-        value={Item.Rating}
+        value={item.Rating}
       />
-      <p>{Item.Description}</p>
+      <p>{item.Description}</p>
     </div>
   );
 }

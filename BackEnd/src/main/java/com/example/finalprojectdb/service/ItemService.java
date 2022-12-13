@@ -24,7 +24,7 @@ public class ItemService {
 
     public Item updateItem(long itemId, ItemRequest itemRequest){
 
-        if(itemRepository.existsById(itemId)) {
+       if(itemRepository.existsById(itemId)) {
             Item itemToBeUpdated = new Item(itemRequest);
             itemToBeUpdated.setId(itemId);
             return itemRepository.save(itemToBeUpdated);

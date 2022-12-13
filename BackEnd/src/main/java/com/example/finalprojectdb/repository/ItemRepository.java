@@ -1,7 +1,6 @@
 package com.example.finalprojectdb.repository;
 
 import com.example.finalprojectdb.entity.Item;
-import com.example.finalprojectdb.entity.User;
 import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;

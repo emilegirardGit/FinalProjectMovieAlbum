@@ -32,8 +32,8 @@ function ItemList() {
     });
   };
   const submitNewItem = (data) => {
-    console.log(data.title, data.description, data.imageURL, rating, data.type)
-    if (selectedUser >= 1)
+    console.log(selectedUser);
+    if (selectedUser >= 1) {
       addItem(
         {
           title: data.title,
@@ -42,33 +42,20 @@ function ItemList() {
           favorite: false,
           rating: rating,
           type: {
-            type: data.type
-          }
+            type: data.type,
+          },
         },
         selectedUser
       );
-    else alert("Please select a user");
-  };
-  const changeUser = (data) => {
-    setSelectedUser(data.currentTarget.value);
-    console.log(selectedUser);
+    } else {
+      alert("Please select a user");
+    }
   };
 
-  useEffect(() => {
-    getUsers();
-    getItems(selectedUser);
-    addItem({
-      title: "test",
-      description: "te",
-      imageURL: "tfds",
-      favorite: false,
-      rating: rating,
-      type: {
-        type: "movie"
-      }
-    },
-    1)
-  }, []);
+  const changeUser = (data) => {
+    setSelectedUser(data);
+    getItems(data);
+  };
 
   const getUsers = () => {
     axios
@@ -83,9 +70,9 @@ function ItemList() {
   };
 
   const getItems = (userId) => {
-    if (selectedUser >= 1) {
+    if (userId >= 1) {
       axios
-        .get("http//localhost:8080/api/users/" + userId + "/items")
+        .get("http://localhost:8080/api/users/" + userId + "/items")
         .then((response) => {
           console.log(response);
           setItems(response.data);
@@ -93,7 +80,7 @@ function ItemList() {
         .catch((error) => {
           console.log(error);
         });
-    }
+    } else setItems([]);
   };
 
   const addUser = (user) => {
@@ -108,10 +95,31 @@ function ItemList() {
       });
   };
 
+  const updateFavorite = (itemId) => {
+    axios.get("http://localhost:8080/api/items/" + itemId).then((response) => {
+      const temp = {
+        title: response.data.title,
+        description: response.data.description,
+        imageURL: response.data.imageURL,
+        favorite: !response.data.favorite,
+        rating: response.data.rating,
+        type: {
+          type: response.data.type.type,
+        },
+      };
+      console.log(temp);
+      deleteItem(itemId);
+      addItem(temp, selectedUser);
+    });
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
   const addItem = (item, userId) => {
-    var path = "http//localhost:8080/api/users/" + userId + "/items";
     axios
-      .post(path, item)
+      .post("http://localhost:8080/api/users/" + userId + "/items", item)
       .then((response) => {
         console.log(response);
         getItems(userId);
@@ -120,6 +128,28 @@ function ItemList() {
         console.log(error);
       });
   };
+
+  const deleteItem = (itemId) => {
+    axios
+      .delete("http://localhost:8080/api/items/" + itemId)
+      .then((response) => {
+        console.log(response);
+        getItems(selectedUser);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const deleteUser = (userId) => {
+    axios.delete("http://localhost:8080/api/users/" + userId)
+      .then((response) => {
+        console.log(response);
+        getUsers();
+      })
+      .catch((error) => { console.log(error) });
+  }
+
   return (
     <div>
       <h1 className="text-center m-5">Album</h1>
@@ -130,14 +160,18 @@ function ItemList() {
               <Row>
                 <div className="m-2">
                   <label>Select user:</label>
-                  <select name="user" onChange={changeUser}>
+                  <select onChange={(e) => changeUser(e.currentTarget.value)}>
                     <option value="0">Select</option>
                     {Users.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.userName}
-                      </option>
+                      <option key={user.id} value={user.id}>{user.userName}</option>
                     ))}
                   </select>
+                </div>
+              </Row>
+              <Row>
+                <div className="m-2">
+                  <label>Delete Selected User:</label>
+                  <button  className="m-2"onClick={()=>deleteUser(selectedUser)}>Delete</button>
                 </div>
               </Row>
               <Row>
@@ -220,18 +254,21 @@ function ItemList() {
             <Row>
               {items.map(
                 (i) =>
-                  i.Favorite && (
+                  i.favorite && (
                     <Col lg={3} sm={6}>
                       <Item
-                        key={i.Id}
-                        Item={{
-                          Title: i.Title,
-                          Type: i.Type,
-                          ImageURL: i.ImageURL,
-                          Description: i.Description,
-                          Rating: i.Rating,
-                          Favorite: i.Favorite,
+                        key={i.id}
+                        item={{
+                          Id: i.id,
+                          Title: i.title,
+                          Description: i.description,
+                          ImageURL: i.imageURL,
+                          Favorite: i.favorite,
+                          Rating: i.rating,
+                          Type: i.type,
                         }}
+                        deleteItem={deleteItem}
+                        updateFavorite={updateFavorite}
                       />
                     </Col>
                   )
@@ -240,19 +277,21 @@ function ItemList() {
             <Row>
               {items.map(
                 (i) =>
-                  !i.Favorite && (
+                  !i.favorite && (
                     <Col lg={3} sm={6}>
                       <Item
-                        className="item"
-                        key={i.Id}
-                        Item={{
-                          Title: i.Title,
-                          Type: i.Type,
-                          ImageURL: i.ImageURL,
-                          Description: i.Description,
-                          Rating: i.Rating,
-                          Favorite: i.Favorite,
+                        key={i.id}
+                        item={{
+                          Id: i.id,
+                          Title: i.title,
+                          Description: i.description,
+                          ImageURL: i.imageURL,
+                          Favorite: i.favorite,
+                          Rating: i.rating,
+                          Type: i.type,
                         }}
+                        deleteItem={deleteItem}
+                        updateFavorite={updateFavorite}
                       />
                     </Col>
                   )
