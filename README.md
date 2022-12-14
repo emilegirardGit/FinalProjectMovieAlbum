@@ -6,6 +6,9 @@ My project is a album the user can add a user and select it after they are added
 ## Design:
 I have three entity class for my project. The first one is the user entity this entity is use to store the user of the page. Next, it's the item entity this one is a many-to-one relationship with the user class so this mean that the user can have many item. And finaly the last entity is one-to-one relationship with the item class to have a type entity. This entity is used to get the time of item they want.
 
+## Video Link
+https://youtu.be/Y7y3ozWPCfo
+
 ### Database Desing
 ![Relationship](Relationship.png)
 
@@ -15,6 +18,17 @@ http://localhost:8080/api/user
 http://localhost:8080/api/user/{userId}  
 http://localhost:8080/api/user/{userId}/items  
 http://localhost:8080/api/items/{itemId}
+
+### User Stories
+-Add items  
+-Add Users  
+-Favorite an item  
+-Delete an item  
+-Set rating
+
+### Libraries
+React Hook Form: https://react-hook-form.com/  
+React Rating: https://github.com/smastrom/react-rating
 
 ### Screenshots
 #### Fullscreen
